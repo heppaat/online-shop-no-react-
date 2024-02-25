@@ -26,6 +26,9 @@ type productType = {
 
 const mainDiv = document.getElementById("app") as HTMLDivElement;
 
+//GLOBAL VARIABLE for all Products from getAllProducts function
+let allProducts: productType[];
+
 const productComponent = ({
   id,
   title,
@@ -52,11 +55,36 @@ const getAllProducts = async () => {
   );
   if (!response.success) return;
 
-  const products = response.data;
+  allProducts = response.data;
 
-  const result = products.map((product) => productComponent(product)).join("");
+  const result = allProducts
+    .map((product) => productComponent(product))
+    .join("");
 
   mainDiv.innerHTML = result;
+  listenerToAddToCart();
+};
+
+const postToCart = async (id: string) => {
+  const productToBag = allProducts.find((product) => product.id === +id);
+
+  const response = await safeFetch(
+    "POST",
+    "http://localhost:4000/api/cart",
+    ProductSchema,
+    productToBag
+  );
+  if (!response.success) return;
+};
+
+const listenerToAddToCart = () => {
+  const toCartButtons = document.getElementsByClassName("toCart");
+  for (let i = 0; i < toCartButtons.length; i++) {
+    const button = toCartButtons[i];
+    button.addEventListener("click", () => {
+      postToCart(button.id.split("toCart")[0]);
+    });
+  }
 };
 
 window.addEventListener("load", getAllProducts);
