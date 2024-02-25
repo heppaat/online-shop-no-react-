@@ -77,6 +77,10 @@ server.post("/api/cart", async (req, res) => {
     checkExistInCart.counter++;
     checkExistInCart.price =
       checkExistInCart.price + checkExistInCart.originalPrice;
+
+    const isSuccessFull = await writeFile("cart", productsInCart);
+    if (!isSuccessFull) return res.sendStatus(500);
+    res.json("already in cart, counter incremented");
   } else {
     validatedProductToCart.counter++;
     validatedProductToCart.originalPrice = validatedProductToCart.price;
