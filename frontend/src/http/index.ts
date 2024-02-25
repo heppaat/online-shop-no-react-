@@ -14,8 +14,8 @@ type Response<Type> =
 type Method = "GET" | "POST" | "DELETE" | "PATCH";
 
 export const safeFetch = async <Schema extends z.ZodTypeAny>(
-  url: string,
   method: Method,
+  url: string,
   schema: Schema,
   payload?: any
 ): Promise<Response<z.infer<typeof schema>>> => {
@@ -37,7 +37,7 @@ export const safeFetch = async <Schema extends z.ZodTypeAny>(
 
     if (!result.success) return { success: false, status: response.status };
 
-    return { success: true, data: result.data, status: response.status };
+    return { data: result.data, success: true, status: response.status };
   } catch (error) {
     return { success: false, status: null };
   }

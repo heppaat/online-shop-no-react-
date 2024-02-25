@@ -29,7 +29,7 @@ const readFile = async (filename: string) => {
       "utf-8"
     );
     const products = JSON.parse(data);
-    return products as Product[];
+    return products;
   } catch (error) {
     return null;
   }
@@ -50,9 +50,11 @@ const writeFile = async (filename: string, data: any) => {
 
 //GET REQUEST
 
-server.get("/api/products", (req, res) => {
-  const products = readFile("products");
+server.get("/api/products", async (req, res) => {
+  const products = await readFile("products");
   if (!products) return res.sendStatus(500);
 
   res.json(products);
 });
+
+server.listen(4000);
