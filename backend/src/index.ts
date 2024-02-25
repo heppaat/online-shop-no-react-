@@ -29,7 +29,7 @@ const readFile = async (filename: string) => {
       "utf-8"
     );
     const products = JSON.parse(data);
-    return products;
+    return products as Product[];
   } catch (error) {
     return null;
   }
@@ -55,6 +55,37 @@ server.get("/api/products", async (req, res) => {
   if (!products) return res.sendStatus(500);
 
   res.json(products);
+});
+
+//POST REQUEST
+
+server.post("/api/cart", async (req, res) => {
+  const result = ProductSchema.safeParse(req.body);
+
+  if (!result.success) return res.status(400).json(result.error.issues);
+
+  const validatedProductToCart = result.data;
+
+  const productsInCart = await readFile("cart");
+  if (!productsInCart) return res.sendStatus(500);
+
+  const checkExistInCart = productsInCart.find(
+    (productInCart) => productInCart.id === validatedProductToCart.id
+  );
+
+  if (checkExistInCart) {
+    checkExistInCart.counter++;
+    checkExistInCart.price =
+      checkExistInCart.price + checkExistInCart.originalPrice;
+  } else {
+    validatedProductToCart.counter++;
+    validatedProductToCart.originalPrice = validatedProductToCart.price;
+    productsInCart.push(validatedProductToCart);
+    const isSuccessFull = await writeFile("cart", productsInCart);
+
+    if (!isSuccessFull) return res.sendStatus(500);
+    res.json("added to cart");
+  }
 });
 
 server.listen(4000);
