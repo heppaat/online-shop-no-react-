@@ -56,6 +56,23 @@ const productComponent = ({
     `;
 };
 
+const cartComponent = ({
+  id,
+  title,
+  price,
+  description,
+  image,
+  counter,
+}: productType) => {
+  return `<div class="cartItem">
+        <img src="${image}" alt="Image">
+        <h1 class="productTitle" id="${id}title">${title}</h1>
+        <p>${description}</p>
+        <h2>Price:${price}</h2>
+        <h2>In your Cart:${counter}</h2>
+    </div>`;
+};
+
 const getAllProducts = async () => {
   const response = await safeFetch(
     "GET",
@@ -87,7 +104,7 @@ const getAllCartItems = async () => {
 
   allCartItems = response.data;
 
-  const result = allCartItems.map((item) => productComponent(item)).join("");
+  const result = allCartItems.map((item) => cartComponent(item)).join("");
 
   mainDiv.innerHTML = result;
 };
