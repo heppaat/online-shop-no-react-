@@ -57,6 +57,13 @@ server.get("/api/products", async (req, res) => {
   res.json(products);
 });
 
+server.get("/api/cart", async (req, res) => {
+  const cartItems = await readFile("cart");
+  if (!cartItems) return res.sendStatus(500);
+
+  res.json(cartItems);
+});
+
 //POST REQUEST
 
 server.post("/api/cart", async (req, res) => {

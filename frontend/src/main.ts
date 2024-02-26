@@ -24,10 +24,19 @@ type productType = {
   ordered: number;
 };
 
+//BUTTON COMPONENT
+const addButton = (id: string, text: string) => {
+  return `<button id="${id}">${text}</button>`;
+};
+
+//MAINDIV
 const mainDiv = document.getElementById("app") as HTMLDivElement;
 
 //GLOBAL VARIABLE for all Products from getAllProducts function
 let allProducts: productType[];
+
+//GLOBAL VARIABLE for all CartItems fro getAllCartItems function
+let allCartItems: productType[];
 
 const productComponent = ({
   id,
@@ -62,7 +71,25 @@ const getAllProducts = async () => {
     .join("");
 
   mainDiv.innerHTML = result;
+  mainDiv.insertAdjacentHTML("beforebegin", addButton("cart", "See Your Cart"));
   listenerToAddToCart();
+  listenerToSeeYourCart();
+};
+
+const getAllCartItems = async () => {
+  const response = await safeFetch(
+    "GET",
+    "http://localhost:4000/api/cart",
+    ProductSchema.array()
+  );
+
+  if (!response.success) return;
+
+  allCartItems = response.data;
+
+  const result = allCartItems.map((item) => productComponent(item)).join("");
+
+  mainDiv.innerHTML = result;
 };
 
 const postToCart = async (id: string) => {
@@ -85,6 +112,13 @@ const listenerToAddToCart = () => {
       postToCart(button.id.split("toCart")[0]);
     });
   }
+};
+
+const listenerToSeeYourCart = () => {
+  const yourCartButton = document.getElementById("cart") as HTMLButtonElement;
+  yourCartButton.addEventListener("click", () => {
+    getAllCartItems();
+  });
 };
 
 window.addEventListener("load", getAllProducts);
