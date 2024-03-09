@@ -48,7 +48,7 @@ const writeFile = async (filename: string, data: any) => {
   }
 };
 
-//GET REQUEST
+//GET REQUESTS
 
 server.get("/api/products", async (req, res) => {
   const products = await readFile("products");
@@ -96,6 +96,44 @@ server.post("/api/cart", async (req, res) => {
 
     if (!isSuccessFull) return res.sendStatus(500);
     res.json("added to cart");
+  }
+});
+
+//DELETE REQUEST
+
+server.delete("/api/cart/:id", async (req, res) => {
+  const id = req.params.id;
+  const result = z.coerce.number().safeParse(id);
+  if (!result.success) return res.status(400).json(result.error.issues);
+
+  const itemId = result.data;
+
+  const productsInCart = await readFile("cart");
+  if (!productsInCart) return res.sendStatus(500);
+
+  const checkExistInCart = productsInCart.find(
+    (element) => element.id === itemId
+  );
+
+  if (checkExistInCart) {
+    if (checkExistInCart.counter > 1) {
+      checkExistInCart.counter--;
+      checkExistInCart.price =
+        checkExistInCart.price - checkExistInCart.originalPrice;
+
+      const isSuccessFull = await writeFile("cart", productsInCart);
+      if (!isSuccessFull) return res.sendStatus(500);
+      res.json("item in cart decremented");
+    } else {
+      const filteredItems = productsInCart.filter(
+        (element) => element.id !== itemId
+      );
+      const isSuccessFull = await writeFile("cart", filteredItems);
+      if (!isSuccessFull) return res.sendStatus(500);
+      res.json("item deleted");
+    }
+  } else {
+    return res.sendStatus(500);
   }
 });
 

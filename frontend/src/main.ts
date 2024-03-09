@@ -71,7 +71,7 @@ const cartComponent = ({
         <h2>Price: ${price} EUR</h2>
         <h2>In your Cart: ${counter}</h2>
         <button class="plus" id="${id}plus">PLUS</button>
-        <button id="minus">MINUS</button>
+        <button class="minus" id="${id}minus">MINUS</button>
     </div>`;
 };
 
@@ -131,6 +131,7 @@ const getAllCartItems = async () => {
   }
   listenerToBackToHomePage();
   listenerToAddPlusToCart();
+  listenerToDeleteFromCart();
 };
 
 const postToCart = async (id: string) => {
@@ -143,6 +144,17 @@ const postToCart = async (id: string) => {
     productToBag
   );
   if (!response.success) return;
+};
+
+const deleteFromCart = async (id: string) => {
+  const response = await safeFetch(
+    "DELETE",
+    `http://localhost:4000/api/cart/${id}`,
+    ProductSchema
+  );
+  if (!response.success) {
+    return;
+  }
 };
 
 const listenerToAddToCart = () => {
@@ -161,6 +173,17 @@ const listenerToAddPlusToCart = () => {
     const button = plusButtons[i];
     button.addEventListener("click", async () => {
       await postToCart(button.id.split("plus")[0]);
+      getAllCartItems();
+    });
+  }
+};
+
+const listenerToDeleteFromCart = () => {
+  const minusButtons = document.getElementsByClassName("minus");
+  for (let i = 0; i < minusButtons.length; i++) {
+    const button = minusButtons[i];
+    button.addEventListener("click", async () => {
+      await deleteFromCart(button.id.split("minus")[0]);
       getAllCartItems();
     });
   }
