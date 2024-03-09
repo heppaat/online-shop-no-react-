@@ -35,7 +35,7 @@ const mainDiv = document.getElementById("app") as HTMLDivElement;
 //GLOBAL VARIABLE for all Products from getAllProducts function
 let allProducts: productType[];
 
-//GLOBAL VARIABLE for all CartItems fro getAllCartItems function
+//GLOBAL VARIABLE for all CartItems from getAllCartItems function
 let allCartItems: productType[];
 
 const productComponent = ({
@@ -91,6 +91,10 @@ const getAllProducts = async () => {
   mainDiv.insertAdjacentHTML("beforebegin", addButton("cart", "See Your Cart"));
   listenerToAddToCart();
   listenerToSeeYourCart();
+  const backToHomePageButton = document.getElementById(
+    "homePage"
+  ) as HTMLButtonElement;
+  backToHomePageButton.remove();
 };
 
 const getAllCartItems = async () => {
@@ -107,6 +111,13 @@ const getAllCartItems = async () => {
   const result = allCartItems.map((item) => cartComponent(item)).join("");
 
   mainDiv.innerHTML = result;
+  const yourCartButton = document.getElementById("cart") as HTMLButtonElement;
+  yourCartButton.remove();
+  mainDiv.insertAdjacentHTML(
+    "beforebegin",
+    addButton("homePage", "Back To Homepage")
+  );
+  listenerToBackTOHomePage();
 };
 
 const postToCart = async (id: string) => {
@@ -135,6 +146,15 @@ const listenerToSeeYourCart = () => {
   const yourCartButton = document.getElementById("cart") as HTMLButtonElement;
   yourCartButton.addEventListener("click", () => {
     getAllCartItems();
+  });
+};
+
+const listenerToBackTOHomePage = () => {
+  const backToHomePageButton = document.getElementById(
+    "homePage"
+  ) as HTMLButtonElement;
+  backToHomePageButton.addEventListener("click", () => {
+    getAllProducts();
   });
 };
 
