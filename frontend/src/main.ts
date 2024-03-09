@@ -48,7 +48,7 @@ const productComponent = ({
   return `
     <div class="product">
         <img src="${image}" alt="Image">
-        <h1 class="productTitle" id="${id}title">${title}</h1>
+        <h1 class="productTitle" id="${id}">${title}</h1>
         <p>${description}</p>
         <h2>${price}</h2>
         <button class="toCart" id="${id}toCart">Add to Cart</button>
@@ -66,10 +66,12 @@ const cartComponent = ({
 }: productType) => {
   return `<div class="cartItem">
         <img src="${image}" alt="Image">
-        <h1 class="productTitle" id="${id}title">${title}</h1>
+        <h1 class="productTitle" id="${id}">${title}</h1>
         <p>${description}</p>
-        <h2>Price:${price}</h2>
-        <h2>In your Cart:${counter}</h2>
+        <h2>Price: ${price} EUR</h2>
+        <h2>In your Cart: ${counter}</h2>
+        <button class="plus" id="${id}plus">PLUS</button>
+        <button id="minus">MINUS</button>
     </div>`;
 };
 
@@ -88,13 +90,16 @@ const getAllProducts = async () => {
     .join("");
 
   mainDiv.innerHTML = result;
-  mainDiv.insertAdjacentHTML("beforebegin", addButton("cart", "See Your Cart"));
-  listenerToAddToCart();
+  const yourCartButton = document.getElementById("cart") as HTMLButtonElement;
+  if (!yourCartButton) {
+    mainDiv.insertAdjacentHTML(
+      "beforebegin",
+      addButton("cart", "See Your Cart")
+    );
+  }
+
   listenerToSeeYourCart();
-  const backToHomePageButton = document.getElementById(
-    "homePage"
-  ) as HTMLButtonElement;
-  backToHomePageButton.remove();
+  listenerToAddToCart();
 };
 
 const getAllCartItems = async () => {
@@ -112,12 +117,20 @@ const getAllCartItems = async () => {
 
   mainDiv.innerHTML = result;
   const yourCartButton = document.getElementById("cart") as HTMLButtonElement;
-  yourCartButton.remove();
-  mainDiv.insertAdjacentHTML(
-    "beforebegin",
-    addButton("homePage", "Back To Homepage")
-  );
-  listenerToBackTOHomePage();
+  if (yourCartButton) {
+    yourCartButton.remove();
+  }
+  const backToHomePageButton = document.getElementById(
+    "homePage"
+  ) as HTMLButtonElement;
+  if (!backToHomePageButton) {
+    mainDiv.insertAdjacentHTML(
+      "beforebegin",
+      addButton("homePage", "Back To Homepage")
+    );
+  }
+  listenerToBackToHomePage();
+  listenerToAddPlusToCart();
 };
 
 const postToCart = async (id: string) => {
@@ -136,8 +149,19 @@ const listenerToAddToCart = () => {
   const toCartButtons = document.getElementsByClassName("toCart");
   for (let i = 0; i < toCartButtons.length; i++) {
     const button = toCartButtons[i];
-    button.addEventListener("click", () => {
-      postToCart(button.id.split("toCart")[0]);
+    button.addEventListener("click", async () => {
+      await postToCart(button.id.split("toCart")[0]);
+    });
+  }
+};
+
+const listenerToAddPlusToCart = () => {
+  const plusButtons = document.getElementsByClassName("plus");
+  for (let i = 0; i < plusButtons.length; i++) {
+    const button = plusButtons[i];
+    button.addEventListener("click", async () => {
+      await postToCart(button.id.split("plus")[0]);
+      getAllCartItems();
     });
   }
 };
@@ -149,12 +173,16 @@ const listenerToSeeYourCart = () => {
   });
 };
 
-const listenerToBackTOHomePage = () => {
+const listenerToBackToHomePage = () => {
   const backToHomePageButton = document.getElementById(
     "homePage"
   ) as HTMLButtonElement;
-  backToHomePageButton.addEventListener("click", () => {
-    getAllProducts();
+  backToHomePageButton.addEventListener("click", async () => {
+    const backToHomePageButton = document.getElementById(
+      "homePage"
+    ) as HTMLButtonElement;
+    await getAllProducts();
+    backToHomePageButton.remove();
   });
 };
 
