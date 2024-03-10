@@ -32,6 +32,12 @@ const addButton = (id: string, text: string) => {
 //MAINDIV
 const mainDiv = document.getElementById("app") as HTMLDivElement;
 
+//EDITOR related divs, buttons
+const loginMainDiv = document.getElementById("loginDiv") as HTMLDivElement;
+const emailInput = document.getElementById("email") as HTMLInputElement;
+const passwordInput = document.getElementById("password") as HTMLInputElement;
+const loginButton = document.getElementById("loginButton") as HTMLButtonElement;
+
 //GLOBAL VARIABLE for all Products from getAllProducts function
 let allProducts: productType[];
 
@@ -93,13 +99,23 @@ const getAllProducts = async () => {
   const yourCartButton = document.getElementById("cart") as HTMLButtonElement;
   if (!yourCartButton) {
     mainDiv.insertAdjacentHTML(
-      "beforebegin",
+      "afterbegin",
       addButton("cart", "See Your Cart")
+    );
+  }
+  const loginEditorButton = document.getElementById(
+    "login"
+  ) as HTMLButtonElement;
+  if (!loginEditorButton) {
+    mainDiv.insertAdjacentHTML(
+      "afterbegin",
+      addButton("loginToEditor", "Login to Editor")
     );
   }
 
   listenerToSeeYourCart();
   listenerToAddToCart();
+  listenerToLoginToEditor();
 };
 
 const getAllCartItems = async () => {
@@ -125,7 +141,7 @@ const getAllCartItems = async () => {
   ) as HTMLButtonElement;
   if (!backToHomePageButton) {
     mainDiv.insertAdjacentHTML(
-      "beforebegin",
+      "afterbegin",
       addButton("homePage", "Back To Homepage")
     );
   }
@@ -206,6 +222,16 @@ const listenerToBackToHomePage = () => {
     ) as HTMLButtonElement;
     await getAllProducts();
     backToHomePageButton.remove();
+  });
+};
+
+const listenerToLoginToEditor = () => {
+  const loginEditorButton = document.getElementById(
+    "loginToEditor"
+  ) as HTMLButtonElement;
+  loginEditorButton.addEventListener("click", () => {
+    loginMainDiv.style.display = "flex";
+    mainDiv.style.display = "none";
   });
 };
 

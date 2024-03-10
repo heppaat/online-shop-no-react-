@@ -8,6 +8,16 @@
   </head>
   <body>
     <div id="app"></div>
+    <div
+      id="loginDiv"
+      class="hidden absolute z-10 inset-0 bg-slate-500 justify-center items-center"
+    >
+      <div class="bg-gray-400 p-10">
+        <input id="email" type="email" placeholder="Email" />
+        <input id="password" type="password" placeholder="Password" />
+        <button id="loginButton">Login</button>
+      </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
